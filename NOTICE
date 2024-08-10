@@ -1,0 +1,20 @@
+Easyfind for Gitlab
+Copyright 2024 - Gafawork
+
+Java library for searching Gitlab Server repositories.
+
+Author: Tirso Andrade
+e-mail: tirso.andrade@gmai.com
+linkedin: https://www.linkedin.com/in/tirsoandrade/
+
+================================================================
+Dependencies:
+
+- gitlab4j-api
+- javax.ws.rs-api
+- log4j-api
+- log4j-core
+- commons-cli
+
+
+
