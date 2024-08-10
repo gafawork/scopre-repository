@@ -36,7 +36,7 @@ mvn clean install
 
 ### **Project Set Up**
 
-To run Gitlab-Search, you must run it via the command line using the parameters below:
+To run easyfind, you must run it via the command line using the parameters below:
 
 ```
 java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
@@ -68,7 +68,7 @@ java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
 
 ![img.png](img.png)
 
-**Note: **
+**Note:**
 - report-yyyy-MM-dd hh-mm-ss.csv file generated with the search result.
 
 ![img_1.png](img_1.png)
