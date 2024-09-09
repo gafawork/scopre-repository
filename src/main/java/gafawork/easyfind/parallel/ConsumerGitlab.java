@@ -68,16 +68,18 @@ public class ConsumerGitlab implements Runnable {
         return retorno;
     }
 
-    @Override
+   @Override
     public void run() {
         try {
-            while (!sharedStatus.get().equals(Constantes.FINISH) || !sharedQueue.isEmpty()) {
-                SearchVO searchVO = sharedQueue.poll();
-                if (searchVO != null) {
-                    String msgLog = String.format("Consumer Thread:  %s - Branch: %s", Thread.currentThread().threadId(), searchVO.getBranch().getName());
-                    logger.info(msgLog);
+            while (!sharedStatus.get().equals(Constantes.FINISH) | !sharedQueue.isEmpty()) {
+                if(!sharedQueue.isEmpty()) {
+                    SearchVO searchVO = sharedQueue.poll();
+                    if (searchVO != null) {
+                        String msgLog = String.format("Consumer Thread:  %s - Branch: %s", Thread.currentThread().threadId(), searchVO.getBranch().getName());
+                        logger.info(msgLog);
 
-                    searchBranch(searchVO);
+                        searchBranch(searchVO);
+                    }
                 }
             }
         } catch (Exception e) {
