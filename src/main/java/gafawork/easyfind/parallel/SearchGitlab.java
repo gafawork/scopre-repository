@@ -21,10 +21,7 @@ import java.util.List;
 
 
 @SuppressWarnings("java:S1118")
-public class SearchGitlab {
-    private static Logger logger = LogManager.getLogger();
-
-    protected static volatile boolean abort = false;
+public class SearchGitlab extends  Abort {
 
     private static void addError(String projectName, String projectId, String projectBranchName, String path, String msgErro) {
         ErroVO erroVO = new ErroVO();
@@ -38,7 +35,7 @@ public class SearchGitlab {
     }
 
     @SuppressWarnings("java:S1192")
-    public static void searchBranches(SearchDetail searchDetail, Project project, List<Branch> branches) {
+    public static void searchBranches(SearchDetail searchDetail, Project project, List<Branch> branches) throws InterruptedException {
         try {
             for (Iterator<Branch> iter = branches.iterator(); iter.hasNext(); ) {
                 verifyAbort();
@@ -49,6 +46,8 @@ public class SearchGitlab {
 
                 searchDetailClone.setBranch(branch.getName());
                 SearchVO searchVO = setSearchVO(searchDetailClone, project, branch);
+
+
 
                 if (Parameters.getSearchBranches() != null) {
                     filterBranches(searchDetailClone, project, branch);
@@ -62,22 +61,16 @@ public class SearchGitlab {
             }
         } catch (InterruptedException ex) {
             logger.error(ex.getMessage());
-            Thread.currentThread().interrupt();
         } catch (Exception e) {
             addError(searchDetail.getNome(), searchDetail.getId().toString(), searchDetail.getBranch(), searchDetail.getPath(), e.getMessage());
 
+            executeAbort();
             String msgLog = String.format("Progress: %s - Branch: %s -  Progress: %s"  , searchDetail.getNome(), searchDetail.getBranch(), Monitor.getSearchDetails().size());
             logger.info(msgLog);
         }
     }
 
-    private static void verifyAbort() throws InterruptedException {
-        if (abort) {
-            logger.error("Thread producer - Abort");
-            Thread.sleep(1000);
-            Thread.currentThread().interrupt();
-        }
-    }
+
 
     private static void filterBranches(SearchDetail searchDetail, Project project, Branch branch) throws ProductorGitlabInstanceException, InterruptedException {
         for (int i = 0; i < Parameters.getSearchBranches().length; i++) {
@@ -107,14 +100,15 @@ public class SearchGitlab {
         return searchVO;
     }
 
-    public static void searchPrincipal() throws GitLabApiException {
+    public static void searchPrincipal() throws GitLabApiException, InterruptedException {
         if (Parameters.getProjectName() == null)
             searchPrincipalPaged();
         else
             searchPrincipalWithoutPaged();
     }
 
-    private static void searchPrincipalPaged() throws GitLabApiException {
+    private static void searchPrincipalPaged() throws GitLabApiException, InterruptedException {
+
         List<Project> projects = null;
 
         Pager<Project> projectPager = UtilGitlab.getGitlabApi().getProjectApi().getProjects(10);
@@ -149,7 +143,10 @@ public class SearchGitlab {
         }
     }
 
-    private static void searchPrincipalWithoutPaged() throws GitLabApiException {
+    private static void searchPrincipalWithoutPaged() throws GitLabApiException, InterruptedException {
+        Thread.sleep(1000);
+        logger.info("estou no produtor");
+
         List<Project> projects = null;
 
         projects = UtilGitlab.getGitlabApi().getProjectApi().getProjects(Parameters.getProjectName());

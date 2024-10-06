@@ -3,6 +3,7 @@
  */
 package gafawork.easyfind.main;
 
+import gafawork.easyfind.exception.ProductorGitlabInstanceException;
 import gafawork.easyfind.parallel.ConsumerGitlab;
 import gafawork.easyfind.parallel.ProductorGitlab;
 
@@ -29,20 +30,31 @@ public class Easyfind {
 
     static AtomicReference<String> status;
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) throws IOException, InterruptedException, ProductorGitlabInstanceException {
+
 
         System.out.println("Easyfind for Gitlab by Gafawork");
         System.out.println("-------------------------------");
         System.out.println("");
 
+        System.out.println("SETUP");
         setup(args);
 
+        System.out.println("ADD PRODUCTOR");
         addProductor();
 
+        System.out.println("ADD CONSUMER");
         addConsumer();
 
+        System.out.println("REGISTER SHUTDOWNHOOK");
         registerShutdownHook();
+
+        System.out.println("SETUP");
+        // TODO VERIFICAR
+        //shutdown();
+
     }
+
 
     public static void setup(String[] args) {
         Parameters.validateParameters(args);
@@ -103,6 +115,7 @@ public class Easyfind {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                logger.info("shutdownHook in action");
                 try {
                     Easyfind.shutdown();
                 } catch (InterruptedException | IOException e) {

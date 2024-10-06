@@ -5,6 +5,7 @@ package gafawork.easyfind.parallel;
 import gafawork.easyfind.exception.ProductorGitlabInstanceException;
 import gafawork.easyfind.util.Constantes;
 
+import gafawork.easyfind.util.Monitor;
 import gafawork.easyfind.util.SearchVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,8 @@ import org.gitlab4j.api.GitLabApiException;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static java.lang.System.exit;
 
 public class ProductorGitlab extends SearchGitlab implements Runnable {
 
@@ -50,13 +53,7 @@ public class ProductorGitlab extends SearchGitlab implements Runnable {
         return result;
     }
 
-    public static boolean isAbort() {
-        return SearchGitlab.abort;
-    }
 
-    public static void abort() {
-        SearchGitlab.abort = true;
-    }
 
     public void addSharedQueue(SearchVO searchVO) throws InterruptedException {
         sharedQueue.put(searchVO);
@@ -85,10 +82,18 @@ public class ProductorGitlab extends SearchGitlab implements Runnable {
             searchPrincipal();
             sharedStatus.set(Constantes.FINISH);
             logger.info("SEARCH COMPLEATE");
-        } catch (GitLabApiException e) {
+        } catch (GitLabApiException | InterruptedException e) {
+           // Monitor.abort();
             logger.error(e.getMessage());
-            logger.error("Thread producer - interrupt");
-            Thread.currentThread().interrupt();
+            logger.error("Thread producer - mudou status para finish");
+         //   Thread.currentThread().interrupt();
+
+            try {
+
+                executeAbort();
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

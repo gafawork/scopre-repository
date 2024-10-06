@@ -6,6 +6,8 @@ package gafawork.easyfind.util;
 
 import gafawork.easyfind.parallel.ConsumerGitlab;
 import gafawork.easyfind.parallel.ProductorGitlab;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.io.IOException;
@@ -13,6 +15,8 @@ import java.util.*;
 
 @SuppressWarnings("java:S6548")
 public class Monitor {
+    private static Logger logger = LogManager.getLogger();
+
     private static Monitor instance;
 
     private static Object mutex = new Object();
@@ -117,14 +121,16 @@ public class Monitor {
     }
 
     public static void abort() {
-        // produtores
-        ProductorGitlab.abort();
+        logger.info("realizando Monitor abort produtor") ;// produtores
+
+        ProductorGitlab.setAbort();
 
         // consumidoras
         Iterator<ConsumerGitlab> iteratorConsumer = listConsumer.iterator();
         while (iteratorConsumer.hasNext()) {
+            logger.info("realizando Monitor abort consumidores"); // produtores
             ConsumerGitlab consumerGitlab = iteratorConsumer.next();
-            consumerGitlab.abort();
+            consumerGitlab.setAbort();
         }
 
     }
