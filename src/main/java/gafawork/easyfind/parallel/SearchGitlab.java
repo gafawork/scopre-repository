@@ -4,10 +4,6 @@
 
 package gafawork.easyfind.parallel;
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import gafawork.easyfind.exception.ProductorGitlabInstanceException;
 import gafawork.easyfind.util.*;
 

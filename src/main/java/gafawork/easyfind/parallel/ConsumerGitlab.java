@@ -86,11 +86,11 @@ public class ConsumerGitlab extends Abort implements Runnable {
 
             // TODO REMOVER
            // Thread.currentThread().interrupt();
-            try {
-                verifyAbort();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
+           // try {
+           //     verifyAbort();
+           // } catch (InterruptedException ex) {
+           //     throw new RuntimeException(ex);
+           // }
         }
     }
 

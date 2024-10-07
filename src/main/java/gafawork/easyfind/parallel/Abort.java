@@ -22,22 +22,15 @@ abstract class Abort {
     protected static void verifyAbort() throws InterruptedException {
         if (abort) {
             logger.error("Thread producer - Abort");
-            //Thread.sleep(1000);
-
-            // TODO TEMOVER
-            //Thread.currentThread().interrupt();
             executeAbort();
-
         }
     }
 
     protected static void executeAbort() throws InterruptedException {
             logger.error("Thread producer - Abort");
-            //Thread.sleep(1000);
-
-            // TODO TEMOVER
-            //Thread.currentThread().interrupt();
             Monitor.abort();
+
+            // TODO VERIFICAR
             exit(1);
     }
 

@@ -33,7 +33,7 @@ public class Easyfind {
     public static void main(String[] args) throws IOException, InterruptedException, ProductorGitlabInstanceException {
 
 
-        System.out.println("Easyfind for Gitlab by Gafawork");
+        System.out.println("Inventio Repository for Gitlab by Gafawork");
         System.out.println("-------------------------------");
         System.out.println("");
 
@@ -50,11 +50,8 @@ public class Easyfind {
         registerShutdownHook();
 
         System.out.println("SETUP");
-        // TODO VERIFICAR
-        //shutdown();
 
-        // VERIFICAR SE É NECESSÁRIO
-        //executor.awaitTermination(1, TimeUnit.MINUTES);
+        // TODO VERIFICAR SE É NECESSÁRIO
         executor.awaitTermination(1, TimeUnit.MINUTES);
 
     }
@@ -103,13 +100,9 @@ public class Easyfind {
 
         executor.shutdown();
 
-       // try {
-       //     if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
-       //         executor.shutdownNow();
-       //     }
-       // } catch (InterruptedException e) {
-       //     executor.shutdownNow();
-       // }
+        // TODO SUBSTITUIR POR UMA VERIFICACAO DE VARIAVEL GLOBAL, EM QUE IDENTIFICAMOS QUE O SHUTDOWN HOOK
+        //  FOI FINALIZADO E PODE GERAR O RELATORIO SEM TER PROBLEMAS DE CONCORRENCIA.
+        Thread.sleep(5000);
 
         Monitor.report();
     }
@@ -122,6 +115,10 @@ public class Easyfind {
                 logger.info("shutdownHook in action");
                 try {
                     Easyfind.shutdown();
+
+                    // TODO MUDAR ESTADO GLOBAL PARA FINALIZADO ( atencao )
+
+
                 } catch (InterruptedException | IOException e) {
                     logger.error(e.getMessage());
                     Thread.currentThread().interrupt();
