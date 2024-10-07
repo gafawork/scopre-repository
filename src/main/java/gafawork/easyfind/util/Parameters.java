@@ -8,11 +8,11 @@ import java.util.Arrays;
 public class Parameters {
 
     private static boolean debug = false;
-    private static String projectName = null;
+    private static String[]  projectNames = null;
     private static String token = null;
     private static String parallel = null;
     private static String[] texts = null;
-    private static String filter = null;
+    private static String[] filters = null;
     private static String[] searchBranches = null;
 
     private static String hostUrl = null;
@@ -55,6 +55,7 @@ public class Parameters {
                 .longOpt("projectName")
                 .hasArg(true)
                 .desc("project name")
+                .numberOfArgs(Option.UNLIMITED_VALUES)
                 .required(false)
                 .build());
 
@@ -83,12 +84,14 @@ public class Parameters {
                 .longOpt("filter")
                 .hasArg(true)
                 .desc("filter")
+                .numberOfArgs(Option.UNLIMITED_VALUES)
                 .build());
 
         options.addOption(Option.builder("s")
                 .longOpt("search")
                 .hasArg(true)
                 .desc("debug")
+                .numberOfArgs(Option.UNLIMITED_VALUES)
                 .required(false)
                 .build());
 
@@ -112,9 +115,10 @@ public class Parameters {
 
     private static void parseParameterNameProject(CommandLine cmd) {
         if (cmd.hasOption("n")) {
-            projectName = cmd.getOptionValue("n");
+            projectNames = cmd.getOptionValues("n");
             if (debug)
-                System.out.println("-n option = " + projectName);
+                System.out.println("Number of project(s):" + (projectNames.length));
+                System.out.println("Search project(s):" + String.join(",", Arrays.asList(projectNames)));
 
             if (!cmd.hasOption("n")) {
                 System.out.println("-n project name is not defined");
@@ -160,9 +164,10 @@ public class Parameters {
 
     private static void parseParameterFilter(CommandLine cmd) {
         if (cmd.hasOption("f")) {
-            filter = cmd.getOptionValue("f");
+            filters = cmd.getOptionValues("f");
             if (debug)
-                System.out.println("-f option = " + filter);
+                System.out.println("Number of filter(s):" + (filters.length));
+                System.out.println("Search filter(s):" + String.join(",", Arrays.asList(filters)));
 
             if (!cmd.hasOption("f")) {
                 System.out.println("-t filter option is not defined");
@@ -239,12 +244,12 @@ public class Parameters {
         Parameters.debug = debug;
     }
 
-    public static String getProjectName() {
-        return projectName;
+    public static String[] getProjectNames() {
+        return projectNames;
     }
 
-    public static void setProjectName(String projectName) {
-        Parameters.projectName = projectName;
+    public static void setProjectNames(String[] projectNames) {
+        Parameters.projectNames = projectNames;
     }
 
     public static String getToken() {
@@ -271,12 +276,12 @@ public class Parameters {
         Parameters.texts = texts;
     }
 
-    public static String getFilter() {
-        return filter;
+    public static String[] getFilters() {
+        return filters;
     }
 
-    public static void setFilter(String filter) {
-        Parameters.filter = filter;
+    public static void setFilter(String[] filters) {
+        Parameters.filters = filters;
     }
 
     public static String[] getSearchBranches() {

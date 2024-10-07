@@ -56,8 +56,8 @@ public class Monitor {
 
         WriteFile.getInstance().writeTxt("Easyfind by Tirso Andrade");
         WriteFile.getInstance().writeTxt("=============================================");
-        if(Parameters.getFilter() != null)
-            WriteFile.getInstance().writeTxt("Filter: " + Parameters.getFilter());
+        if(Parameters.getFilters() != null)
+            WriteFile.getInstance().writeTxt("Filter: " + Parameters.getFilters());
 
         WriteFile.getInstance().writeTxt("Search: " + Arrays.toString(Parameters.getTexts()));
 

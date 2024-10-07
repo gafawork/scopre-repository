@@ -16,6 +16,7 @@ import org.gitlab4j.api.Pager;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Project;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,8 +48,6 @@ public class SearchGitlab extends  Abort {
                 searchDetailClone.setBranch(branch.getName());
                 SearchVO searchVO = setSearchVO(searchDetailClone, project, branch);
 
-
-
                 if (Parameters.getSearchBranches() != null) {
                     filterBranches(searchDetailClone, project, branch);
                 } else {
@@ -69,8 +68,6 @@ public class SearchGitlab extends  Abort {
             logger.info(msgLog);
         }
     }
-
-
 
     private static void filterBranches(SearchDetail searchDetail, Project project, Branch branch) throws ProductorGitlabInstanceException, InterruptedException {
         for (int i = 0; i < Parameters.getSearchBranches().length; i++) {
@@ -96,12 +93,12 @@ public class SearchGitlab extends  Abort {
         searchVO.setBranch(branchId);
         searchVO.setProject(projectId);
         searchVO.setTexts(Parameters.getTexts());
-        searchVO.setFilter(Parameters.getFilter());
+        searchVO.setFilters(Parameters.getFilters());
         return searchVO;
     }
 
     public static void searchPrincipal() throws GitLabApiException, InterruptedException {
-        if (Parameters.getProjectName() == null)
+        if (Parameters.getProjectNames() == null)
             searchPrincipalPaged();
         else
             searchPrincipalWithoutPaged();
@@ -128,7 +125,6 @@ public class SearchGitlab extends  Abort {
 
                     List<Branch> branches = UtilGitlab.getGitlabApi().getRepositoryApi().getBranches(project);
 
-
                     msgLog = String.format("total branches: %s"  , branches.size());
                     logger.info(msgLog);
 
@@ -149,7 +145,11 @@ public class SearchGitlab extends  Abort {
 
         List<Project> projects = null;
 
-        projects = UtilGitlab.getGitlabApi().getProjectApi().getProjects(Parameters.getProjectName());
+        projects = new ArrayList<Project>();
+        for (int i = 0; i < Parameters.getProjectNames().length; i++) {
+            ArrayList<Project> listTemp = (ArrayList<Project>) UtilGitlab.getGitlabApi().getProjectApi().getProjects( Parameters.getProjectNames()[i] );
+            projects.addAll(listTemp);
+        }
 
         String msgLog = String.format("Total Project: %s " , projects.size());
         logger.info(msgLog);

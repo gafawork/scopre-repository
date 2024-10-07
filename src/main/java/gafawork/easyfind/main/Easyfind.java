@@ -53,6 +53,10 @@ public class Easyfind {
         // TODO VERIFICAR
         //shutdown();
 
+        // VERIFICAR SE É NECESSÁRIO
+        //executor.awaitTermination(1, TimeUnit.MINUTES);
+        executor.awaitTermination(1, TimeUnit.MINUTES);
+
     }
 
 
@@ -99,13 +103,13 @@ public class Easyfind {
 
         executor.shutdown();
 
-        try {
-            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executor.shutdownNow();
-        }
+       // try {
+       //     if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+       //         executor.shutdownNow();
+       //     }
+       // } catch (InterruptedException e) {
+       //     executor.shutdownNow();
+       // }
 
         Monitor.report();
     }

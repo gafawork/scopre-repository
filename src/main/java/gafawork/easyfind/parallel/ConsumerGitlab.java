@@ -73,11 +73,14 @@ public class ConsumerGitlab extends Abort implements Runnable {
                     if (searchVO != null) {
                         String msgLog = String.format("Consumer Thread:  %s - Branch: %s", Thread.currentThread().threadId(), searchVO.getBranch().getName());
                         logger.info(msgLog);
-
                         searchBranch(searchVO);
                     }
                 }
             }
+
+            String msgLog = String.format("SearchBranch - Finish - [thread]: %s", Thread.currentThread().threadId());
+            logger.info(msgLog);
+
         } catch (Exception e) {
             logger.error(e.getMessage());
 
@@ -105,9 +108,14 @@ public class ConsumerGitlab extends Abort implements Runnable {
                 verifyAbort();
 
                 TreeItem treeItem = iter.next();
-                if (searchVO.getFilter() != null) {
-                    if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilter())) {
-                        searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
+                if (searchVO.getFilters() != null) {
+                    // TODO FAZER LAÇO PARA CADA FILTRO
+
+                    // inicio de laço
+                    for (int i = 0; i < searchVO.getFilters().length; i++) {
+                        if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilters()[i])) {
+                            searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
+                        }
                     }
                 } else {
                     if (treeItem.getType() != TreeItem.Type.TREE)
@@ -126,11 +134,11 @@ public class ConsumerGitlab extends Abort implements Runnable {
         } catch (Exception e) {
             logger.error(e.getMessage());
 
-            String msgLog = String.format("Thread Interrupted:  %s - Project: %s  - Branch: %s", Thread.currentThread().threadId(), searchVO.getProject().getName() ,  searchVO.getBranch().getName());
+            String msgLog = String.format("Thread Interrupted:  %s - Project - [thread]: %s  - Branch: %s", Thread.currentThread().threadId(), searchVO.getProject().getName() ,  searchVO.getBranch().getName());
             logger.info(msgLog);
         }
 
-        String msgLog = String.format("SearchBranch - tree - Thread Finish: %s", Thread.currentThread().threadId());
+        String msgLog = String.format("SearchBranch - tree - Finish - [thread]: %s", Thread.currentThread().threadId());
         logger.info(msgLog);
     }
 
