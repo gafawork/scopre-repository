@@ -26,9 +26,10 @@ public class Easyfind {
 
     static ExecutorService executor;
 
-    static BlockingQueue<SearchVO> queue;
+    static BlockingQueue<SearchVO> sharedQueue;
 
-    static AtomicReference<String> status;
+    static AtomicReference<String> sharedStatus;
+
 
     public static void main(String[] args) throws IOException, InterruptedException, ProductorGitlabInstanceException {
 
@@ -71,14 +72,14 @@ public class Easyfind {
         Monitor.setTotalParallel(totalThreads);
 
         executor = Executors.newFixedThreadPool(totalThreads + 1);
-        queue = new LinkedBlockingQueue<>();
-        status = new AtomicReference<>(Constantes.PRODUCING);
+        sharedQueue = new LinkedBlockingQueue<>();
+        sharedStatus = new AtomicReference<>(Constantes.PRODUCING);
     }
 
     public static void addProductor() {
-        ProductorGitlab produtorGitlab = ProductorGitlab.getInstanceConfig(queue, status);
-        produtorGitlab.setSharedStatus(status);
-        produtorGitlab.setSharedQueue(queue);
+        ProductorGitlab produtorGitlab = ProductorGitlab.getInstanceConfig(sharedQueue, sharedStatus);
+        produtorGitlab.setSharedStatus(sharedStatus);
+        produtorGitlab.setSharedQueue(sharedQueue);
         executor.execute(produtorGitlab);
 
         Monitor.addProductor(produtorGitlab);
@@ -86,7 +87,7 @@ public class Easyfind {
 
     public static void addConsumer() {
         for (int i = 1; i <= totalThreads; i++) {
-            ConsumerGitlab consumerGitlab = new ConsumerGitlab(queue, status);
+            ConsumerGitlab consumerGitlab = new ConsumerGitlab(sharedQueue, sharedStatus);
             executor.execute(consumerGitlab);
             Monitor.addConsumer(consumerGitlab);
         }
@@ -100,9 +101,19 @@ public class Easyfind {
 
         executor.shutdown();
 
-        // TODO SUBSTITUIR POR UMA VERIFICACAO DE VARIAVEL GLOBAL, EM QUE IDENTIFICAMOS QUE O SHUTDOWN HOOK
-        //  FOI FINALIZADO E PODE GERAR O RELATORIO SEM TER PROBLEMAS DE CONCORRENCIA.
-        Thread.sleep(5000);
+       // SEMPRE QUE FOR CHAMADO O SHUTDOWN TEM QUE VERIFICAR SE JA TERMINARAM AS THREADS
+        //Thread.sleep(5000);
+
+        logger.info("antes de espera");
+        logger.info(sharedStatus.get());
+        logger.info(sharedQueue.size());
+
+        while (!sharedStatus.get().equals(Constantes.FINISH) & !sharedQueue.isEmpty()) {
+            logger.info("entrei na espera");
+            logger.info(sharedStatus.get());
+            logger.info(sharedQueue.size());
+            Thread.sleep(5000);
+        }
 
         Monitor.report();
     }

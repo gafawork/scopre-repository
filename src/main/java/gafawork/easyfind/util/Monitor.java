@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("java:S6548")
 public class Monitor {
@@ -23,7 +24,7 @@ public class Monitor {
 
     private static List<ErroVO> listErros = new ArrayList<>();
 
-    private static List<SearchDetail> searchDetails = new ArrayList<>();
+    private static ConcurrentHashMap<Long, SearchDetail> searchDetails = new ConcurrentHashMap <>();
 
     private static List<ProductorGitlab> listProductor = new ArrayList<>();
 
@@ -52,7 +53,7 @@ public class Monitor {
     public static void report() throws IOException {
         int totalSearch = 0;
 
-        Iterator<SearchDetail> iteratorSearchDetail = searchDetails.iterator();
+        Iterator<Long> iteratorSearchDetail = searchDetails.keySet().iterator();
 
         WriteFile.getInstance().writeTxt("Easyfind by Tirso Andrade");
         WriteFile.getInstance().writeTxt("=============================================");
@@ -62,7 +63,10 @@ public class Monitor {
         WriteFile.getInstance().writeTxt("Search: " + Arrays.toString(Parameters.getTexts()));
 
         while (iteratorSearchDetail.hasNext()) {
-            SearchDetail searchDetail = iteratorSearchDetail.next();
+            Long searchDetailId = iteratorSearchDetail.next();
+
+            SearchDetail searchDetail = searchDetails.get(searchDetailId);
+
             if(searchDetail.getReferences() > 0) {
                 totalSearch++;
                 WriteFile.getInstance().writeTxt("=============================================");
@@ -73,11 +77,14 @@ public class Monitor {
                 WriteFile.getInstance().writeTxt("url:" + searchDetail.getUrl());
                 WriteFile.getInstance().writeTxt("references:" + searchDetail.getReferences());
 
+                Iterator<Long> iteratorLines = searchDetail.getLines().keySet().iterator();
 
-                Iterator<String> iteratorLines = searchDetail.getLines().iterator();
+                //Iterator<String> iteratorLines = searchDetail.getLines().keySet().iterator();
                 while (iteratorLines.hasNext()) {
-                    String linha = iteratorLines.next();
-                    WriteFile.getInstance().writeTxt("     " + linha);
+                    Long searchDetailLinesId = iteratorLines.next();
+                    String searchDetailLine = searchDetail.getLines().get(searchDetailLinesId);
+                   // String linha = iteratorLines.next();
+                    WriteFile.getInstance().writeTxt("     " + searchDetailLine);
                 }
 
             }
@@ -139,8 +146,9 @@ public class Monitor {
         return Monitor.listErros;
     }
 
-    public static List<SearchDetail> getSearchDetails() {
-        return Monitor.searchDetails;
+    // TODO VERIFICAR GENERICS
+    public static ConcurrentHashMap<Long, SearchDetail> getSearchDetails() {
+        return (ConcurrentHashMap<Long, SearchDetail>) Monitor.searchDetails;
     }
 
     public static void addErro(ErroVO erroVO) {
@@ -148,7 +156,7 @@ public class Monitor {
     }
 
     public static void addSearchDetail(SearchDetail searchDetail) {
-        Monitor.getSearchDetails().add(searchDetail);
+        Monitor.getSearchDetails().put(searchDetail.getId(), searchDetail);
     }
 
 }
