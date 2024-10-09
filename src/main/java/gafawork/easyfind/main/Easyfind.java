@@ -31,7 +31,7 @@ public class Easyfind {
     static AtomicReference<String> sharedStatus;
 
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)  {
         System.out.println("Inventio Repository for Gitlab by Gafawork");
         System.out.println("-------------------------------");
         System.out.println("");
@@ -50,8 +50,8 @@ public class Easyfind {
 
         System.out.println("SETUP");
 
-        // TODO VERIFICAR SE É NECESSÁRIO
-        executor.awaitTermination(1, TimeUnit.MINUTES);
+        // TODO VERIFY
+        //executor.awaitTermination(1, TimeUnit.MINUTES);
 
     }
 

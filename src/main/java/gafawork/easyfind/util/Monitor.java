@@ -129,17 +129,11 @@ public class Monitor {
 
     public static void abort() {
         logger.info("realizando Monitor abort produtor") ;// produtores
+        ProductorGitlab.abort();
+        ConsumerGitlab.abort();
 
-        ProductorGitlab.callAbort();
-
-        // consumidoras
-        Iterator<ConsumerGitlab> iteratorConsumer = listConsumer.iterator();
-        while (iteratorConsumer.hasNext()) {
-            logger.info("realizando Monitor abort consumidores"); // produtores
-            ConsumerGitlab consumerGitlab = iteratorConsumer.next();
-            consumerGitlab.callAbort();
-        }
     }
+
 
     public static List<ErroVO> getListaErros() {
         return Monitor.listErros;

@@ -34,7 +34,9 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
         this.sharedStatus = sharedStatus;
     }
 
-
+    public static void  abort() {
+        callAbort();
+    }
     public boolean search(SearchDetail searchDetail, Pattern pattern, String path, int posLine, String line) {
         boolean retorno = false;
 
@@ -97,19 +99,8 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
 
             for (Iterator<TreeItem> iter = tree.iterator(); iter.hasNext(); ) {
                 verifyAbort();
-
                 TreeItem treeItem = iter.next();
-                if (searchVO.getFilters() != null) {
-                    // inicio de laço para cada filtro
-                    for (int i = 0; i < searchVO.getFilters().length; i++) {
-                        if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilters()[i])) {
-                            searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
-                        }
-                    }
-                } else {
-                    if (treeItem.getType() != TreeItem.Type.TREE)
-                        searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
-                }
+                searchBranchFilter( searchVO, treeItem);
             }
 
             writeCSV(searchDetail);
@@ -124,6 +115,20 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
         String msgLog = String.format("SearchBranch - tree - Finish - [thread]: %s", Thread.currentThread().threadId());
         logger.info(msgLog);
     }
+
+    private void searchBranchFilter(SearchVO searchVO,TreeItem treeItem  ) throws GitLabApiException, IOException {
+        if (searchVO.getFilters() != null) {
+            for (int i = 0; i < searchVO.getFilters().length; i++) {
+                if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilters()[i])) {
+                    searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
+                }
+            }
+        } else {
+            if (treeItem.getType() != TreeItem.Type.TREE)
+                searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
+        }
+    }
+
 
 
 

@@ -35,6 +35,10 @@ public class ProductorGitlab extends SearchGitlab implements Runnable {
         this.sharedStatus = sharedStatus;
     }
 
+    public static void  abort() {
+        callAbort();
+    }
+
     public static ProductorGitlab getInstanceConfig(BlockingQueue<SearchVO> sharedQueue, AtomicReference<String> sharedStatus) {
         ProductorGitlab result = instance;
         if (result == null) {
