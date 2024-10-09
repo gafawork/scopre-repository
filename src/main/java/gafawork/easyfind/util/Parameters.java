@@ -112,7 +112,7 @@ public class Parameters {
             System.out.println("-d option = true");
         }
     }
-
+    @SuppressWarnings("java:S2681")
     private static void parseParameterNameProject(CommandLine cmd) {
         if (cmd.hasOption("n")) {
             projectNames = cmd.getOptionValues("n");
@@ -161,7 +161,7 @@ public class Parameters {
             }
         }
     }
-
+    @SuppressWarnings("java:S2681")
     private static void parseParameterFilter(CommandLine cmd) {
         if (cmd.hasOption("f")) {
             filters = cmd.getOptionValues("f");

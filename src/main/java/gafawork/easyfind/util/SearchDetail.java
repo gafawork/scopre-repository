@@ -3,8 +3,9 @@
  */
 package gafawork.easyfind.util;
 
-import java.util.List;
+
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SearchDetail {
@@ -20,7 +21,7 @@ public class SearchDetail {
 
     private AtomicInteger references =  new AtomicInteger();
 
-    private ConcurrentHashMap<Long, String> lines;
+    private ConcurrentMap<Long, String> lines;
 
     public SearchDetail(){}
 
@@ -55,8 +56,8 @@ public class SearchDetail {
     }
 
     public void addLine(String linha) {
-        Long id = (long) lines.size();
-        lines.put(++id,linha);
+        Long key = (long) lines.size();
+        lines.put(++key,linha);
     }
 
     public Long getId() {
@@ -107,11 +108,11 @@ public class SearchDetail {
         this.references.set(value);
     }
 
-    public ConcurrentHashMap<Long, String> getLines() {
+    public ConcurrentMap<Long, String> getLines() {
         return lines;
     }
 
-    public void setLines(ConcurrentHashMap<Long, String> linhas) {
+    public void setLines(ConcurrentMap<Long, String> linhas) {
         this.lines = linhas;
     }
 }

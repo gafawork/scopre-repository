@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ConsumerGitlab extends Abort implements Runnable {
+public class ConsumerGitlab extends AbortUtil implements Runnable {
 
     private static Logger logger = LogManager.getLogger();
 
@@ -29,7 +29,7 @@ public class ConsumerGitlab extends Abort implements Runnable {
 
     private  AtomicReference<String> sharedStatus;
 
-    private volatile boolean abort = false;
+    //private volatile boolean abort = false;
 
 
     public ConsumerGitlab(BlockingQueue<SearchVO> sharedQueue, AtomicReference<String> sharedStatus) {
@@ -67,8 +67,8 @@ public class ConsumerGitlab extends Abort implements Runnable {
             Thread.sleep(1000);
             logger.info("estou no consumidor");
 
-            while (!sharedStatus.get().equals(Constantes.FINISH) | !sharedQueue.isEmpty()) {
-                if(!sharedQueue.isEmpty()) {
+            while (!sharedStatus.get().equals(Constantes.FINISH) || !sharedQueue.isEmpty()) {
+                if (!sharedQueue.isEmpty()) {
                     SearchVO searchVO = sharedQueue.poll();
                     if (searchVO != null) {
                         String msgLog = String.format("Consumer Thread:  %s - Branch: %s", Thread.currentThread().threadId(), searchVO.getBranch().getName());
@@ -80,21 +80,15 @@ public class ConsumerGitlab extends Abort implements Runnable {
 
             String msgLog = String.format("SearchBranch - Finish - [thread]: %s", Thread.currentThread().threadId());
             logger.info(msgLog);
-
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-
-            // TODO REMOVER
-           // Thread.currentThread().interrupt();
-           // try {
-           //     verifyAbort();
-           // } catch (InterruptedException ex) {
-           //     throw new RuntimeException(ex);
-           // }
+        } catch (InterruptedException interruptedException) {
+            logger.error(interruptedException);
+            Thread.currentThread().interrupt();
+        } catch (Exception excpetion) {
+            logger.error(excpetion.getMessage());
         }
     }
 
-    private void searchBranch(SearchVO searchVO) throws InterruptedException {
+    private void searchBranch(SearchVO searchVO) {
         try {
             String msgLog = String.format("SearchBranch - tree - Thread : %s", Thread.currentThread().threadId());
             logger.info(msgLog);
@@ -109,9 +103,7 @@ public class ConsumerGitlab extends Abort implements Runnable {
 
                 TreeItem treeItem = iter.next();
                 if (searchVO.getFilters() != null) {
-                    // TODO FAZER LAÇO PARA CADA FILTRO
-
-                    // inicio de laço
+                    // inicio de laço para cada filtro
                     for (int i = 0; i < searchVO.getFilters().length; i++) {
                         if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilters()[i])) {
                             searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
@@ -124,12 +116,6 @@ public class ConsumerGitlab extends Abort implements Runnable {
             }
 
             writeCSV(searchDetail);
-
-        } catch (InterruptedException ex) {
-            logger.error(ex.getMessage());
-
-            // TODO REMOVER
-            //Thread.currentThread().interrupt();
             verifyAbort();
         } catch (Exception e) {
             logger.error(e.getMessage());

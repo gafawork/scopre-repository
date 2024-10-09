@@ -6,7 +6,7 @@ import gafawork.easyfind.exception.ProductorGitlabInstanceException;
 import gafawork.easyfind.main.Easyfind;
 import gafawork.easyfind.util.Constantes;
 
-import gafawork.easyfind.util.Monitor;
+
 import gafawork.easyfind.util.SearchVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,7 +83,7 @@ public class ProductorGitlab extends SearchGitlab implements Runnable {
             sharedStatus.set(Constantes.FINISH);
             logger.info("SEARCH COMPLEATE");
 
-            while (!sharedStatus.get().equals(Constantes.FINISH) | !sharedQueue.isEmpty()) {
+            while (!sharedStatus.get().equals(Constantes.FINISH) || !sharedQueue.isEmpty()) {
                 Thread.sleep(1000);
             }
 
@@ -91,13 +91,7 @@ public class ProductorGitlab extends SearchGitlab implements Runnable {
 
         } catch (GitLabApiException | InterruptedException | IOException e) {
             logger.error(e.getMessage());
-            try {
-                executeAbort();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
+            Thread.currentThread().interrupt();
         }
     }
-
-
 }

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings("java:S6548")
 public class Monitor {
@@ -24,7 +25,7 @@ public class Monitor {
 
     private static List<ErroVO> listErros = new ArrayList<>();
 
-    private static ConcurrentHashMap<Long, SearchDetail> searchDetails = new ConcurrentHashMap <>();
+    private static ConcurrentMap<Long, SearchDetail> searchDetails = new ConcurrentHashMap <>();
 
     private static List<ProductorGitlab> listProductor = new ArrayList<>();
 
@@ -79,11 +80,10 @@ public class Monitor {
 
                 Iterator<Long> iteratorLines = searchDetail.getLines().keySet().iterator();
 
-                //Iterator<String> iteratorLines = searchDetail.getLines().keySet().iterator();
                 while (iteratorLines.hasNext()) {
                     Long searchDetailLinesId = iteratorLines.next();
                     String searchDetailLine = searchDetail.getLines().get(searchDetailLinesId);
-                   // String linha = iteratorLines.next();
+
                     WriteFile.getInstance().writeTxt("     " + searchDetailLine);
                 }
 
@@ -130,16 +130,15 @@ public class Monitor {
     public static void abort() {
         logger.info("realizando Monitor abort produtor") ;// produtores
 
-        ProductorGitlab.setAbort();
+        ProductorGitlab.callAbort();
 
         // consumidoras
         Iterator<ConsumerGitlab> iteratorConsumer = listConsumer.iterator();
         while (iteratorConsumer.hasNext()) {
             logger.info("realizando Monitor abort consumidores"); // produtores
             ConsumerGitlab consumerGitlab = iteratorConsumer.next();
-            consumerGitlab.setAbort();
+            consumerGitlab.callAbort();
         }
-
     }
 
     public static List<ErroVO> getListaErros() {
@@ -147,8 +146,8 @@ public class Monitor {
     }
 
     // TODO VERIFICAR GENERICS
-    public static ConcurrentHashMap<Long, SearchDetail> getSearchDetails() {
-        return (ConcurrentHashMap<Long, SearchDetail>) Monitor.searchDetails;
+    public static ConcurrentMap<Long, SearchDetail> getSearchDetails() {
+        return Monitor.searchDetails;
     }
 
     public static void addErro(ErroVO erroVO) {

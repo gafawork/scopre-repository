@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import static java.lang.System.exit;
 
-abstract class Abort {
+abstract class AbortUtil {
     protected static Logger logger = LogManager.getLogger();
 
     private static volatile boolean abort = false;
@@ -15,18 +15,22 @@ abstract class Abort {
         return abort;
     }
 
-    public static void setAbort() {
+    public static void callAbort() {
         abort = true;
     }
 
-    protected static void verifyAbort() throws InterruptedException {
+    protected AbortUtil() {
+
+    }
+
+    protected static void verifyAbort() {
         if (abort) {
             logger.error("Thread producer - Abort");
             executeAbort();
         }
     }
 
-    protected static void executeAbort() throws InterruptedException {
+    protected static void executeAbort() {
             logger.error("Thread producer - Abort");
             Monitor.abort();
 

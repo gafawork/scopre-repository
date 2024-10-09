@@ -3,7 +3,7 @@
  */
 package gafawork.easyfind.main;
 
-import gafawork.easyfind.exception.ProductorGitlabInstanceException;
+
 import gafawork.easyfind.parallel.ConsumerGitlab;
 import gafawork.easyfind.parallel.ProductorGitlab;
 
@@ -31,9 +31,7 @@ public class Easyfind {
     static AtomicReference<String> sharedStatus;
 
 
-    public static void main(String[] args) throws IOException, InterruptedException, ProductorGitlabInstanceException {
-
-
+    public static void main(String[] args) throws InterruptedException {
         System.out.println("Inventio Repository for Gitlab by Gafawork");
         System.out.println("-------------------------------");
         System.out.println("");
@@ -101,17 +99,8 @@ public class Easyfind {
 
         executor.shutdown();
 
-       // SEMPRE QUE FOR CHAMADO O SHUTDOWN TEM QUE VERIFICAR SE JA TERMINARAM AS THREADS
-        //Thread.sleep(5000);
-
-        logger.info("antes de espera");
-        logger.info(sharedStatus.get());
-        logger.info(sharedQueue.size());
-
-        while (!sharedStatus.get().equals(Constantes.FINISH) & !sharedQueue.isEmpty()) {
-            logger.info("entrei na espera");
-            logger.info(sharedStatus.get());
-            logger.info(sharedQueue.size());
+        // TODO REMOVER?
+        while (!sharedStatus.get().equals(Constantes.FINISH) && !sharedQueue.isEmpty()) {
             Thread.sleep(5000);
         }
 
@@ -126,10 +115,6 @@ public class Easyfind {
                 logger.info("shutdownHook in action");
                 try {
                     Easyfind.shutdown();
-
-                    // TODO MUDAR ESTADO GLOBAL PARA FINALIZADO ( atencao )
-
-
                 } catch (InterruptedException | IOException e) {
                     logger.error(e.getMessage());
                     Thread.currentThread().interrupt();
