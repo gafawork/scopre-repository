@@ -34,7 +34,6 @@ abstract class AbortUtil {
             logger.error("Thread producer - Abort");
             Monitor.abort();
 
-            // TODO VERIFICAR
             exit(1);
     }
 

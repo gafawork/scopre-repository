@@ -92,18 +92,10 @@ public class Easyfind {
     }
 
     @SuppressWarnings("java:S2142")
-    public static void shutdown() throws InterruptedException, IOException {
+    public static void shutdown() throws  IOException {
         logger.info("shutdown");
-
         Monitor.abort();
-
         executor.shutdown();
-
-        // TODO REMOVER?
-        while (!sharedStatus.get().equals(Constantes.FINISH) && !sharedQueue.isEmpty()) {
-            Thread.sleep(5000);
-        }
-
         Monitor.report();
     }
 
@@ -115,9 +107,8 @@ public class Easyfind {
                 logger.info("shutdownHook in action");
                 try {
                     Easyfind.shutdown();
-                } catch (InterruptedException | IOException e) {
+                } catch (IOException e) {
                     logger.error(e.getMessage());
-                    Thread.currentThread().interrupt();
                 }
             }
         });

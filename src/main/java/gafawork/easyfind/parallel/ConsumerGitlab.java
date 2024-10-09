@@ -29,9 +29,6 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
 
     private  AtomicReference<String> sharedStatus;
 
-    //private volatile boolean abort = false;
-
-
     public ConsumerGitlab(BlockingQueue<SearchVO> sharedQueue, AtomicReference<String> sharedStatus) {
         this.sharedQueue = sharedQueue;
         this.sharedStatus = sharedStatus;

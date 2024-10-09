@@ -145,7 +145,6 @@ public class Monitor {
         return Monitor.listErros;
     }
 
-    // TODO VERIFICAR GENERICS
     public static ConcurrentMap<Long, SearchDetail> getSearchDetails() {
         return Monitor.searchDetails;
     }
