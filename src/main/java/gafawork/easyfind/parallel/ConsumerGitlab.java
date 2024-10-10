@@ -63,9 +63,6 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
     @Override
     public void run() {
         try {
-            Thread.sleep(1000);
-            logger.info("estou no consumidor");
-
             while (!sharedStatus.get().equals(Constantes.FINISH) || !sharedQueue.isEmpty()) {
                 if (!sharedQueue.isEmpty()) {
                     SearchVO searchVO = sharedQueue.poll();

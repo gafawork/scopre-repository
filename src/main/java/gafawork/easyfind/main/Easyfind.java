@@ -36,16 +36,9 @@ public class Easyfind {
         System.out.println("-------------------------------");
         System.out.println("");
 
-        System.out.println("SETUP");
         setup(args);
-
-        System.out.println("ADD PRODUCTOR");
         addProductor();
-
-        System.out.println("ADD CONSUMER");
         addConsumer();
-
-        System.out.println("REGISTER SHUTDOWNHOOK");
         registerShutdownHook();
     }
 
