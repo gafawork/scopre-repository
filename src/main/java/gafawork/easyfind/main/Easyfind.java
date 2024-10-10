@@ -47,12 +47,6 @@ public class Easyfind {
 
         System.out.println("REGISTER SHUTDOWNHOOK");
         registerShutdownHook();
-
-        System.out.println("SETUP");
-
-        // TODO VERIFY
-        //executor.awaitTermination(1, TimeUnit.MINUTES);
-
     }
 
 
