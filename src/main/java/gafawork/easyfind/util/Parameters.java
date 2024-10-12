@@ -11,9 +11,14 @@ public class Parameters {
     private static String[]  projectNames = null;
     private static String token = null;
     private static String parallel = null;
+
+    private static String classPlugin = null;
+
     private static String[] texts = null;
     private static String[] filters = null;
     private static String[] searchBranches = null;
+
+    private static String fileFilter = null;
 
     private static String hostUrl = null;
     private static Options options = new Options();
@@ -43,6 +48,14 @@ public class Parameters {
     public static void validateParameters(String[] args) {
 
         getInstance();
+
+        options.addOption(Option.builder("c")
+                .longOpt("classPlugin")
+                .hasArg(true)
+                .desc("classPlugin")
+                .required(false)
+                .build());
+
 
         options.addOption(Option.builder("d")
                 .longOpt("debug")
@@ -74,7 +87,7 @@ public class Parameters {
                 .build());
 
         options.addOption(Option.builder("p")
-                .longOpt("gafawork/easyfind/parallel")
+                .longOpt("parallel")
                 .hasArg(true)
                 .desc("parallel ([REQUIRED])")
                 .required(true)
@@ -98,9 +111,16 @@ public class Parameters {
         options.addOption(Option.builder("b")
                 .longOpt("searchBranches")
                 .hasArg(true)
-                .desc("branches ")
+                .desc("branches")
                 .numberOfArgs(Option.UNLIMITED_VALUES)
                 .required(true)
+                .build());
+
+        options.addOption(Option.builder("i")
+                .longOpt("inputFile")
+                .hasArg(true)
+                .desc("input file filter")
+                .required(false)
                 .build());
 
         parseParameter(options, args);
@@ -126,14 +146,39 @@ public class Parameters {
         }
     }
 
-    private static void parseParameterparallel(CommandLine cmd) {
+    @SuppressWarnings("java:S2681")
+    private static void parseParameterClassPlugin(CommandLine cmd) {
+        if (cmd.hasOption("c")) {
+            classPlugin = cmd.getOptionValue("c");
+            if (debug)
+                System.out.println("-c option = " + classPlugin);
+
+            if (!cmd.hasOption("c")) {
+                System.out.println("-c class plugin is not defined");
+            }
+        }
+    }
+
+    private static void parseParameterParallel(CommandLine cmd) {
         if (cmd.hasOption("p")) {
             parallel = cmd.getOptionValue("p");
             if (debug)
                 System.out.println("-p option = " + parallel);
 
             if (!cmd.hasOption("p")) {
-                System.out.println("-n parallel option is not defined");
+                System.out.println("-p parallel option is not defined");
+            }
+        }
+    }
+
+    private static void parseParameterFileFilter(CommandLine cmd) {
+        if (cmd.hasOption("i")) {
+            fileFilter = cmd.getOptionValue("i");
+            if (debug)
+                System.out.println("-i option = " + fileFilter);
+
+            if (!cmd.hasOption("i")) {
+                System.out.println("-i input file filter option is not defined");
             }
         }
     }
@@ -204,6 +249,8 @@ public class Parameters {
                     OR
                     -f <arg>
                     OR
+                    -i <arg>
+                    OR
                     -s <arg>""";
 
             System.out.println(msg);
@@ -218,12 +265,14 @@ public class Parameters {
 
             parseParameterDebug(cmd);
             parseParameterNameProject(cmd);
-            parseParameterparallel(cmd);
+            parseParameterParallel(cmd);
             parseParameterToken(cmd);
             parseParameterHostUrl(cmd);
             parseParameterFilter(cmd);
             parseParameterBranch(cmd);
             parseParameterSearch(cmd);
+            parseParameterFileFilter(cmd);
+            parseParameterClassPlugin(cmd);
 
 
         } catch (ParseException pe) {
@@ -308,5 +357,19 @@ public class Parameters {
         Parameters.hostUrl = hostUrl;
     }
 
+    public static String getFilefilter() {
+        return fileFilter;
+    }
 
+    public static void setFilefilter(String filefilter) {
+        Parameters.fileFilter = filefilter;
+    }
+
+    public static String getClassPlugin() {
+        return classPlugin;
+    }
+
+    public static void setClassPlugin(String classPlugin) {
+        Parameters.classPlugin = classPlugin;
+    }
 }

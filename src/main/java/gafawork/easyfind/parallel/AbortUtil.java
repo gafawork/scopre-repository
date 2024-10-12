@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import static java.lang.System.exit;
 
-abstract class AbortUtil {
+public abstract class AbortUtil {
     protected static Logger logger = LogManager.getLogger();
 
     private static volatile boolean abort = false;

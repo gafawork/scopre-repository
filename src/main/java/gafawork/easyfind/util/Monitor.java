@@ -6,6 +6,7 @@ package gafawork.easyfind.util;
 
 import gafawork.easyfind.parallel.ConsumerGitlab;
 import gafawork.easyfind.parallel.ProductorGitlab;
+import gafawork.easyfind.plugin.ExecutePlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,6 +31,9 @@ public class Monitor {
     private static List<ProductorGitlab> listProductor = new ArrayList<>();
 
     private static List<ConsumerGitlab> listConsumer = new ArrayList<>();
+
+    private static List<ExecutePlugin> listPlugin = new ArrayList<>();
+
 
     private static int totalProject = 0;
 
@@ -103,6 +107,10 @@ public class Monitor {
         listConsumer.add(consumerGitlab);
     }
 
+    public static void addPluign(ExecutePlugin executePlugin) {
+        listPlugin.add(executePlugin);
+    }
+
     public static int getTotalProject() {
         return totalProject;
     }
@@ -119,19 +127,23 @@ public class Monitor {
         Monitor.totalParallel = totalParallel;
     }
 
-    public static List<ProductorGitlab> getListaProductor() {
+    public static List<ProductorGitlab> getListProductor() {
         return listProductor;
     }
 
-    public static List<ConsumerGitlab> getListaConsumer() {
+    public static List<ConsumerGitlab> getListConsumer() {
         return listConsumer;
+    }
+
+    public static List<ExecutePlugin> getListPlugin() {
+        return listPlugin;
     }
 
     public static void abort() {
         logger.info("realizando Monitor abort produtor") ;// produtores
         ProductorGitlab.abort();
         ConsumerGitlab.abort();
-
+        ExecutePlugin.abort();
     }
 
 

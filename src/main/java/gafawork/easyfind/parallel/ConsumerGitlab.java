@@ -1,5 +1,6 @@
 package gafawork.easyfind.parallel;
 
+import gafawork.easyfind.main.Easyfind;
 import gafawork.easyfind.util.*;
 
 
@@ -14,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -37,12 +39,15 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
     public static void  abort() {
         callAbort();
     }
-    public boolean search(SearchDetail searchDetail, Pattern pattern, String path, int posLine, String line) {
+    public boolean search(SearchDetail searchDetail, String rule , String path, int posLine, String line) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         boolean retorno = false;
+
+        Pattern pattern = getPattern(rule);
 
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
+
             retorno = true;
 
             searchDetail.encontrado();
@@ -55,6 +60,8 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
 
             searchDetail.addLine(outArquivo);
             searchDetail.addLine(outLinha);
+
+            Easyfind.addPlugin(searchDetail.getNome(), searchDetail.getPath(), searchDetail.getBranch(), searchDetail.getUrl(), rule);
         }
 
         return retorno;
@@ -76,9 +83,6 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
 
             String msgLog = String.format("SearchBranch - Finish - [thread]: %s", Thread.currentThread().threadId());
             logger.info(msgLog);
-        } catch (InterruptedException interruptedException) {
-            logger.error(interruptedException);
-            Thread.currentThread().interrupt();
         } catch (Exception excpetion) {
             logger.error(excpetion.getMessage());
         }
@@ -113,7 +117,7 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
         logger.info(msgLog);
     }
 
-    private void searchBranchFilter(SearchVO searchVO,TreeItem treeItem  ) throws GitLabApiException, IOException {
+    private void searchBranchFilter(SearchVO searchVO,TreeItem treeItem  ) throws GitLabApiException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (searchVO.getFilters() != null) {
             for (int i = 0; i < searchVO.getFilters().length; i++) {
                 if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilters()[i])) {
@@ -139,7 +143,7 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
         }
     }
 
-    private void searchAux(SearchVO searchVO, TreeItem treeItem, Project project, Branch branch, String[] texts) throws IOException, GitLabApiException {
+    private void searchAux(SearchVO searchVO, TreeItem treeItem, Project project, Branch branch, String[] texts) throws IOException, GitLabApiException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         logger.info(treeItem.getName());
         InputStream is = null;
 
@@ -155,7 +159,7 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
             lineID++;
 
             for (int i = 0; i < texts.length; i++) {
-                search(searchVO.getSearchDetail(), getPattern(texts[i]), treeItem.getPath(), lineID, line);
+                search(searchVO.getSearchDetail(), texts[i] , treeItem.getPath(), lineID, line);
             }
         }
 

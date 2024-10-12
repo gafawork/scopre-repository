@@ -19,7 +19,7 @@ public class SearchDetail {
 
     private volatile String url;
 
-    private AtomicInteger references =  new AtomicInteger();
+    private final AtomicInteger references =  new AtomicInteger();
 
     private ConcurrentMap<Long, String> lines;
 
