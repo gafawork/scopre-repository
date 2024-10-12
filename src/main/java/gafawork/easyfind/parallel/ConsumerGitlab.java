@@ -1,5 +1,6 @@
 package gafawork.easyfind.parallel;
 
+import gafawork.easyfind.main.Easyfind;
 import gafawork.easyfind.util.*;
 
 
@@ -14,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -21,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ConsumerGitlab implements Runnable {
+public class ConsumerGitlab extends AbortUtil implements Runnable {
 
     private static Logger logger = LogManager.getLogger();
 
@@ -29,28 +31,23 @@ public class ConsumerGitlab implements Runnable {
 
     private  AtomicReference<String> sharedStatus;
 
-    private volatile boolean abort = false;
-
-
     public ConsumerGitlab(BlockingQueue<SearchVO> sharedQueue, AtomicReference<String> sharedStatus) {
         this.sharedQueue = sharedQueue;
         this.sharedStatus = sharedStatus;
     }
 
-    public boolean isAbort() {
-        return abort;
+    public static void  abort() {
+        callAbort();
     }
-
-    public void abort() {
-        abort = true;
-    }
-
-    public boolean search(SearchDetail searchDetail, Pattern pattern, String path, int posLine, String line) {
+    public boolean search(SearchDetail searchDetail, String rule , String path, int posLine, String line) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         boolean retorno = false;
+
+        Pattern pattern = getPattern(rule);
 
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
+
             retorno = true;
 
             searchDetail.encontrado();
@@ -63,6 +60,8 @@ public class ConsumerGitlab implements Runnable {
 
             searchDetail.addLine(outArquivo);
             searchDetail.addLine(outLinha);
+
+            Easyfind.addPlugin(searchDetail.getNome(), searchDetail.getPath(), searchDetail.getBranch(), searchDetail.getUrl(), rule);
         }
 
         return retorno;
@@ -72,17 +71,20 @@ public class ConsumerGitlab implements Runnable {
     public void run() {
         try {
             while (!sharedStatus.get().equals(Constantes.FINISH) || !sharedQueue.isEmpty()) {
-                SearchVO searchVO = sharedQueue.poll();
-                if (searchVO != null) {
-                    String msgLog = String.format("Consumer Thread:  %s - Branch: %s", Thread.currentThread().threadId(), searchVO.getBranch().getName());
-                    logger.info(msgLog);
-
-                    searchBranch(searchVO);
+                if (!sharedQueue.isEmpty()) {
+                    SearchVO searchVO = sharedQueue.poll();
+                    if (searchVO != null) {
+                        String msgLog = String.format("Consumer Thread:  %s - Branch: %s", Thread.currentThread().threadId(), searchVO.getBranch().getName());
+                        logger.info(msgLog);
+                        searchBranch(searchVO);
+                    }
                 }
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            Thread.currentThread().interrupt();
+
+            String msgLog = String.format("SearchBranch - Finish - [thread]: %s", Thread.currentThread().threadId());
+            logger.info(msgLog);
+        } catch (Exception excpetion) {
+            logger.error(excpetion.getMessage());
         }
     }
 
@@ -98,41 +100,38 @@ public class ConsumerGitlab implements Runnable {
 
             for (Iterator<TreeItem> iter = tree.iterator(); iter.hasNext(); ) {
                 verifyAbort();
-
                 TreeItem treeItem = iter.next();
-                if (searchVO.getFilter() != null) {
-                    if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilter())) {
-                        searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
-                    }
-                } else {
-                    if (treeItem.getType() != TreeItem.Type.TREE)
-                        searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
-                }
+                searchBranchFilter( searchVO, treeItem);
             }
 
             writeCSV(searchDetail);
-
-        } catch (InterruptedException ex) {
-            logger.error(ex.getMessage());
-            Thread.currentThread().interrupt();
+            verifyAbort();
         } catch (Exception e) {
             logger.error(e.getMessage());
 
-            String msgLog = String.format("Thread Interrupted:  %s - Project: %s  - Branch: %s", Thread.currentThread().threadId(), searchVO.getProject().getName() ,  searchVO.getBranch().getName());
+            String msgLog = String.format("Thread Interrupted:  %s - Project - [thread]: %s  - Branch: %s", Thread.currentThread().threadId(), searchVO.getProject().getName() ,  searchVO.getBranch().getName());
             logger.info(msgLog);
         }
 
-        String msgLog = String.format("SearchBranch - tree - Thread Finish: %s", Thread.currentThread().threadId());
+        String msgLog = String.format("SearchBranch - tree - Finish - [thread]: %s", Thread.currentThread().threadId());
         logger.info(msgLog);
     }
 
-    private void verifyAbort() throws InterruptedException {
-        if (abort) {
-            logger.error("Thread Consumer - abort");
-            Thread.sleep(1000);
-            Thread.currentThread().interrupt();
+    private void searchBranchFilter(SearchVO searchVO,TreeItem treeItem  ) throws GitLabApiException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        if (searchVO.getFilters() != null) {
+            for (int i = 0; i < searchVO.getFilters().length; i++) {
+                if (treeItem.getType() != TreeItem.Type.TREE && treeItem.getName().matches(searchVO.getFilters()[i])) {
+                    searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
+                }
+            }
+        } else {
+            if (treeItem.getType() != TreeItem.Type.TREE)
+                searchAux(searchVO, treeItem, searchVO.getProject(), searchVO.getBranch(), searchVO.getTexts());
         }
     }
+
+
+
 
     private void writeCSV(SearchDetail searchDetail) throws IOException {
         WriteFile writeCSV = WriteFile.getInstance();
@@ -144,7 +143,7 @@ public class ConsumerGitlab implements Runnable {
         }
     }
 
-    private void searchAux(SearchVO searchVO, TreeItem treeItem, Project project, Branch branch, String[] texts) throws IOException, GitLabApiException {
+    private void searchAux(SearchVO searchVO, TreeItem treeItem, Project project, Branch branch, String[] texts) throws IOException, GitLabApiException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         logger.info(treeItem.getName());
         InputStream is = null;
 
@@ -160,7 +159,7 @@ public class ConsumerGitlab implements Runnable {
             lineID++;
 
             for (int i = 0; i < texts.length; i++) {
-                search(searchVO.getSearchDetail(), getPattern(texts[i]), treeItem.getPath(), lineID, line);
+                search(searchVO.getSearchDetail(), texts[i] , treeItem.getPath(), lineID, line);
             }
         }
 

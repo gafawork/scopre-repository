@@ -4,10 +4,6 @@
 
 package gafawork.easyfind.parallel;
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import gafawork.easyfind.exception.ProductorGitlabInstanceException;
 import gafawork.easyfind.util.*;
 
@@ -16,15 +12,13 @@ import org.gitlab4j.api.Pager;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Project;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 
 @SuppressWarnings("java:S1118")
-public class SearchGitlab {
-    private static Logger logger = LogManager.getLogger();
-
-    protected static volatile boolean abort = false;
+public class SearchGitlab extends AbortUtil {
 
     private static void addError(String projectName, String projectId, String projectBranchName, String path, String msgErro) {
         ErroVO erroVO = new ErroVO();
@@ -38,7 +32,7 @@ public class SearchGitlab {
     }
 
     @SuppressWarnings("java:S1192")
-    public static void searchBranches(SearchDetail searchDetail, Project project, List<Branch> branches) {
+    public static void searchBranches(SearchDetail searchDetail, Project project, List<Branch> branches)  {
         try {
             for (Iterator<Branch> iter = branches.iterator(); iter.hasNext(); ) {
                 verifyAbort();
@@ -55,27 +49,21 @@ public class SearchGitlab {
                 } else {
                     Monitor.addSearchDetail(searchDetailClone);
 
-                    String msgLog = String.format("Progress: %s"  , Monitor.getSearchDetails().size());
+                    String msgLog = String.format("Progress: %s", Monitor.getSearchDetails().size());
                     logger.info(msgLog);
                     ProductorGitlab.getInstance().addSharedQueue(searchVO);
                 }
             }
-        } catch (InterruptedException ex) {
-            logger.error(ex.getMessage());
+        } catch (InterruptedException interruptedException) {
+            logger.error(interruptedException);
             Thread.currentThread().interrupt();
+
         } catch (Exception e) {
             addError(searchDetail.getNome(), searchDetail.getId().toString(), searchDetail.getBranch(), searchDetail.getPath(), e.getMessage());
 
+            executeAbort();
             String msgLog = String.format("Progress: %s - Branch: %s -  Progress: %s"  , searchDetail.getNome(), searchDetail.getBranch(), Monitor.getSearchDetails().size());
             logger.info(msgLog);
-        }
-    }
-
-    private static void verifyAbort() throws InterruptedException {
-        if (abort) {
-            logger.error("Thread producer - Abort");
-            Thread.sleep(1000);
-            Thread.currentThread().interrupt();
         }
     }
 
@@ -103,18 +91,19 @@ public class SearchGitlab {
         searchVO.setBranch(branchId);
         searchVO.setProject(projectId);
         searchVO.setTexts(Parameters.getTexts());
-        searchVO.setFilter(Parameters.getFilter());
+        searchVO.setFilters(Parameters.getFilters());
         return searchVO;
     }
 
     public static void searchPrincipal() throws GitLabApiException {
-        if (Parameters.getProjectName() == null)
+        if (Parameters.getProjectNames() == null)
             searchPrincipalPaged();
         else
             searchPrincipalWithoutPaged();
     }
 
     private static void searchPrincipalPaged() throws GitLabApiException {
+
         List<Project> projects = null;
 
         Pager<Project> projectPager = UtilGitlab.getGitlabApi().getProjectApi().getProjects(10);
@@ -134,7 +123,6 @@ public class SearchGitlab {
 
                     List<Branch> branches = UtilGitlab.getGitlabApi().getRepositoryApi().getBranches(project);
 
-
                     msgLog = String.format("total branches: %s"  , branches.size());
                     logger.info(msgLog);
 
@@ -152,7 +140,11 @@ public class SearchGitlab {
     private static void searchPrincipalWithoutPaged() throws GitLabApiException {
         List<Project> projects = null;
 
-        projects = UtilGitlab.getGitlabApi().getProjectApi().getProjects(Parameters.getProjectName());
+        projects = new ArrayList<>();
+        for (int i = 0; i < Parameters.getProjectNames().length; i++) {
+            ArrayList<Project> listTemp = (ArrayList) UtilGitlab.getGitlabApi().getProjectApi().getProjects( Parameters.getProjectNames()[i] );
+            projects.addAll(listTemp);
+        }
 
         String msgLog = String.format("Total Project: %s " , projects.size());
         logger.info(msgLog);
@@ -179,7 +171,6 @@ public class SearchGitlab {
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
-
         }
     }
 }

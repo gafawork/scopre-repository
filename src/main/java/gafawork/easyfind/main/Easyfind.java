@@ -6,6 +6,7 @@ package gafawork.easyfind.main;
 import gafawork.easyfind.parallel.ConsumerGitlab;
 import gafawork.easyfind.parallel.ProductorGitlab;
 
+import gafawork.easyfind.plugin.ExecutePlugin;
 import gafawork.easyfind.util.*;
 
 import org.apache.logging.log4j.Level;
@@ -14,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.IOException;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,26 +26,26 @@ public class Easyfind {
 
     static int totalThreads;
 
-    static ExecutorService executor;
+    static ExecutorService executorPrincipal;
 
-    static BlockingQueue<SearchVO> queue;
+    static ExecutorService executorPlugin;
 
-    static AtomicReference<String> status;
+    static BlockingQueue<SearchVO> sharedQueue;
+
+    static AtomicReference<String> sharedStatus;
+
 
     public static void main(String[] args)  {
-
-        System.out.println("Easyfind for Gitlab by Gafawork");
+        System.out.println("Inventio Repository for Gitlab by Gafawork");
         System.out.println("-------------------------------");
         System.out.println("");
 
         setup(args);
-
         addProductor();
-
         addConsumer();
-
         registerShutdownHook();
     }
+
 
     public static void setup(String[] args) {
         Parameters.validateParameters(args);
@@ -53,48 +56,65 @@ public class Easyfind {
 
         UtilGitlab.connect();
 
+        Parameters.getProjectNames();
+
         totalThreads = Integer.parseInt(Parameters.getParallel());
 
         Monitor.setTotalParallel(totalThreads);
 
-        executor = Executors.newFixedThreadPool(totalThreads + 1);
-        queue = new LinkedBlockingQueue<>();
-        status = new AtomicReference<>(Constantes.PRODUCING);
+        executorPrincipal = Executors.newFixedThreadPool(totalThreads + 1);
+        sharedQueue = new LinkedBlockingQueue<>();
+        sharedStatus = new AtomicReference<>(Constantes.PRODUCING);
+
+        executorPlugin = Executors.newFixedThreadPool(totalThreads + 1);
+
     }
 
     public static void addProductor() {
-        ProductorGitlab produtorGitlab = ProductorGitlab.getInstanceConfig(queue, status);
-        produtorGitlab.setSharedStatus(status);
-        produtorGitlab.setSharedQueue(queue);
-        executor.execute(produtorGitlab);
+        ProductorGitlab produtorGitlab = ProductorGitlab.getInstanceConfig(sharedQueue, sharedStatus);
+        produtorGitlab.setSharedStatus(sharedStatus);
+        produtorGitlab.setSharedQueue(sharedQueue);
+        executorPrincipal.execute(produtorGitlab);
 
         Monitor.addProductor(produtorGitlab);
     }
 
     public static void addConsumer() {
         for (int i = 1; i <= totalThreads; i++) {
-            ConsumerGitlab consumerGitlab = new ConsumerGitlab(queue, status);
-            executor.execute(consumerGitlab);
+            ConsumerGitlab consumerGitlab = new ConsumerGitlab(sharedQueue, sharedStatus);
+            executorPrincipal.execute(consumerGitlab);
             Monitor.addConsumer(consumerGitlab);
         }
     }
 
-    @SuppressWarnings("java:S2142")
-    public static void shutdown() throws InterruptedException, IOException {
-        logger.info("shutdown");
+    public static void addPlugin(String name, String path, String branch, String url, String rule) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        String classNamePlugin = Parameters.getClassPlugin();
 
-        Monitor.abort();
+        if (classNamePlugin != null && !classNamePlugin.equals("")) {
+            var clazz = Class.forName(classNamePlugin);
+            ExecutePlugin plugin = (ExecutePlugin) clazz.getDeclaredConstructor().newInstance();
 
-        executor.shutdown();
+            plugin.setProjectName(name);
+            plugin.setBranchName(branch);
+            plugin.setPath(path);
+            plugin.setUrl(url);
+            plugin.setRule(rule);
 
-        try {
-            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executor.shutdownNow();
+            plugin.run();
+
+            Monitor.addPluign(plugin);
+
+            executorPlugin.execute(plugin);
         }
+    }
 
+
+
+    @SuppressWarnings("java:S2142")
+    public static void shutdown() throws  IOException {
+        logger.info("shutdown");
+        Monitor.abort();
+        executorPrincipal.shutdown();
         Monitor.report();
     }
 
@@ -103,11 +123,11 @@ public class Easyfind {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                logger.info("shutdownHook in action");
                 try {
                     Easyfind.shutdown();
-                } catch (InterruptedException | IOException e) {
+                } catch (IOException e) {
                     logger.error(e.getMessage());
-                    Thread.currentThread().interrupt();
                 }
             }
         });

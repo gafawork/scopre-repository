@@ -6,24 +6,34 @@ package gafawork.easyfind.util;
 
 import gafawork.easyfind.parallel.ConsumerGitlab;
 import gafawork.easyfind.parallel.ProductorGitlab;
+import gafawork.easyfind.plugin.ExecutePlugin;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings("java:S6548")
 public class Monitor {
+    private static Logger logger = LogManager.getLogger();
+
     private static Monitor instance;
 
     private static Object mutex = new Object();
 
     private static List<ErroVO> listErros = new ArrayList<>();
 
-    private static List<SearchDetail> searchDetails = new ArrayList<>();
+    private static ConcurrentMap<Long, SearchDetail> searchDetails = new ConcurrentHashMap <>();
 
     private static List<ProductorGitlab> listProductor = new ArrayList<>();
 
     private static List<ConsumerGitlab> listConsumer = new ArrayList<>();
+
+    private static List<ExecutePlugin> listPlugin = new ArrayList<>();
+
 
     private static int totalProject = 0;
 
@@ -48,17 +58,20 @@ public class Monitor {
     public static void report() throws IOException {
         int totalSearch = 0;
 
-        Iterator<SearchDetail> iteratorSearchDetail = searchDetails.iterator();
+        Iterator<Long> iteratorSearchDetail = searchDetails.keySet().iterator();
 
         WriteFile.getInstance().writeTxt("Easyfind by Tirso Andrade");
         WriteFile.getInstance().writeTxt("=============================================");
-        if(Parameters.getFilter() != null)
-            WriteFile.getInstance().writeTxt("Filter: " + Parameters.getFilter());
+        if(Parameters.getFilters() != null)
+            WriteFile.getInstance().writeTxt("Filter: " + Parameters.getFilters());
 
         WriteFile.getInstance().writeTxt("Search: " + Arrays.toString(Parameters.getTexts()));
 
         while (iteratorSearchDetail.hasNext()) {
-            SearchDetail searchDetail = iteratorSearchDetail.next();
+            Long searchDetailId = iteratorSearchDetail.next();
+
+            SearchDetail searchDetail = searchDetails.get(searchDetailId);
+
             if(searchDetail.getReferences() > 0) {
                 totalSearch++;
                 WriteFile.getInstance().writeTxt("=============================================");
@@ -69,11 +82,13 @@ public class Monitor {
                 WriteFile.getInstance().writeTxt("url:" + searchDetail.getUrl());
                 WriteFile.getInstance().writeTxt("references:" + searchDetail.getReferences());
 
+                Iterator<Long> iteratorLines = searchDetail.getLines().keySet().iterator();
 
-                Iterator<String> iteratorLines = searchDetail.getLines().iterator();
                 while (iteratorLines.hasNext()) {
-                    String linha = iteratorLines.next();
-                    WriteFile.getInstance().writeTxt("     " + linha);
+                    Long searchDetailLinesId = iteratorLines.next();
+                    String searchDetailLine = searchDetail.getLines().get(searchDetailLinesId);
+
+                    WriteFile.getInstance().writeTxt("     " + searchDetailLine);
                 }
 
             }
@@ -92,6 +107,10 @@ public class Monitor {
         listConsumer.add(consumerGitlab);
     }
 
+    public static void addPluign(ExecutePlugin executePlugin) {
+        listPlugin.add(executePlugin);
+    }
+
     public static int getTotalProject() {
         return totalProject;
     }
@@ -108,32 +127,31 @@ public class Monitor {
         Monitor.totalParallel = totalParallel;
     }
 
-    public static List<ProductorGitlab> getListaProductor() {
+    public static List<ProductorGitlab> getListProductor() {
         return listProductor;
     }
 
-    public static List<ConsumerGitlab> getListaConsumer() {
+    public static List<ConsumerGitlab> getListConsumer() {
         return listConsumer;
     }
 
-    public static void abort() {
-        // produtores
-        ProductorGitlab.abort();
-
-        // consumidoras
-        Iterator<ConsumerGitlab> iteratorConsumer = listConsumer.iterator();
-        while (iteratorConsumer.hasNext()) {
-            ConsumerGitlab consumerGitlab = iteratorConsumer.next();
-            consumerGitlab.abort();
-        }
-
+    public static List<ExecutePlugin> getListPlugin() {
+        return listPlugin;
     }
+
+    public static void abort() {
+        logger.info("realizando Monitor abort produtor") ;// produtores
+        ProductorGitlab.abort();
+        ConsumerGitlab.abort();
+        ExecutePlugin.abort();
+    }
+
 
     public static List<ErroVO> getListaErros() {
         return Monitor.listErros;
     }
 
-    public static List<SearchDetail> getSearchDetails() {
+    public static ConcurrentMap<Long, SearchDetail> getSearchDetails() {
         return Monitor.searchDetails;
     }
 
@@ -142,7 +160,7 @@ public class Monitor {
     }
 
     public static void addSearchDetail(SearchDetail searchDetail) {
-        Monitor.getSearchDetails().add(searchDetail);
+        Monitor.getSearchDetails().put(searchDetail.getId(), searchDetail);
     }
 
 }

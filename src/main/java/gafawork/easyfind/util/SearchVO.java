@@ -14,7 +14,7 @@ public class SearchVO {
 
     private  String[] texts;
 
-    private  String filter;
+    private  String[] filter;
 
     private  SearchDetail searchDetail;
 
@@ -50,11 +50,11 @@ public class SearchVO {
         this.texts = texts;
     }
 
-    public String getFilter() {
+    public String[] getFilters() {
         return filter;
     }
 
-    public void setFilter(String filter) {
+    public void setFilters(String[] filter) {
         this.filter = filter;
     }
 
