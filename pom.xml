@@ -73,7 +73,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>gafawork.easyfind.main.Easyfind</mainClass>
+                            <mainClass>gafawork.scopre.repository.main.Easyfind</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -100,7 +100,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <packageName>util</packageName>
-                            <mainClass>gafawork.easyfind.main.Easyfind</mainClass>
+                            <mainClass>gafawork.scopre.repository.main.Easyfind</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

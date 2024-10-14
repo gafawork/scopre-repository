@@ -1,13 +1,10 @@
-package gafawork.easyfind.parallel;
+package gafawork.scopre.repository.parallel;
 
+import gafawork.scopre.repository.exception.ProductorGitlabInstanceException;
+import gafawork.scopre.repository.main.Easyfind;
+import gafawork.scopre.repository.util.Constantes;
 
-
-import gafawork.easyfind.exception.ProductorGitlabInstanceException;
-import gafawork.easyfind.main.Easyfind;
-import gafawork.easyfind.util.Constantes;
-
-
-import gafawork.easyfind.util.SearchVO;
+import gafawork.scopre.repository.util.SearchVO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gitlab4j.api.GitLabApiException;
@@ -15,8 +12,6 @@ import org.gitlab4j.api.GitLabApiException;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static java.lang.System.exit;
 
 public class ProductorGitlab extends SearchGitlab implements Runnable {
 

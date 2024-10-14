@@ -1,7 +1,7 @@
 /**
  *
  */
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,11 +47,9 @@ public class SearchDetail {
         cloneSearchBean.setReferences(this.getReferences());
 
         return cloneSearchBean;
-
-
     }
 
-    public void encontrado() {
+    public void found() {
         references.incrementAndGet();
     }
 

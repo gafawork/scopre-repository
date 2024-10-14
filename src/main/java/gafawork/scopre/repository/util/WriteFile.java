@@ -1,4 +1,4 @@
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
 
 import java.io.FileWriter;

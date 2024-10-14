@@ -1,4 +1,4 @@
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
 import org.apache.commons.cli.*;
 
@@ -250,6 +250,8 @@ public class Parameters {
                     -f <arg>
                     OR
                     -i <arg>
+                    OR
+                    -c <arg>
                     OR
                     -s <arg>""";
 

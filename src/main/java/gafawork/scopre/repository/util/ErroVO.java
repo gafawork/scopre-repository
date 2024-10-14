@@ -1,4 +1,4 @@
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
 public class ErroVO {
     private volatile String projetName;

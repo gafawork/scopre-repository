@@ -1,4 +1,4 @@
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
 import org.gitlab4j.api.GitLabApi;
 
@@ -14,7 +14,6 @@ public class UtilGitlab {
         gitlabapi.setRequestTimeout(300000, 300000);
 
     }
-
 
     public static void logout() {
         UtilGitlab.gitlabapi.close();

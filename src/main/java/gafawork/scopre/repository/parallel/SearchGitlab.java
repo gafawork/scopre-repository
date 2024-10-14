@@ -2,11 +2,11 @@
  *
  */
 
-package gafawork.easyfind.parallel;
+package gafawork.scopre.repository.parallel;
 
-import gafawork.easyfind.exception.ProductorGitlabInstanceException;
-import gafawork.easyfind.util.*;
+import gafawork.scopre.repository.exception.ProductorGitlabInstanceException;
 
+import gafawork.scopre.repository.util.*;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.Pager;
 import org.gitlab4j.api.models.Branch;

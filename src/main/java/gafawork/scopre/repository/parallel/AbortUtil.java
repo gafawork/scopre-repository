@@ -1,6 +1,6 @@
-package gafawork.easyfind.parallel;
+package gafawork.scopre.repository.parallel;
 
-import gafawork.easyfind.util.Monitor;
+import gafawork.scopre.repository.util.Monitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,9 +20,7 @@ public abstract class AbortUtil {
     }
 
     protected AbortUtil() {
-
     }
-
     protected static void verifyAbort() {
         if (abort) {
             logger.error("Thread producer - Abort");
@@ -36,8 +34,6 @@ public abstract class AbortUtil {
 
             exit(1);
     }
-
-
 }
 
 
