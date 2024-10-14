@@ -1,4 +1,4 @@
-# Easyfind for Gitlab <br />Java Library for search in the GitLab repository
+# Scopre Repository for Gitlab <br />Java Library for search in the GitLab repository
 
 Java library for searching Gitlab Server repositories.
 
@@ -17,7 +17,7 @@ mvn clean install
 ```
 
 ---
-### Using Easy Find
+### Using Scopre Repository
 
 | parameter                   | functionality                                                | sample                                      |
 |-----------------------------|--------------------------------------------------------------|---------------------------------------------|
@@ -41,7 +41,7 @@ mvn clean install
 To run Gitlab-Search, you must run it via the command line using the parameters below:
 
 ```
-java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
+java -jar ./target/scopre-repository-1.0-jar-with-dependencies.jar
 -d
 -t glpat-x2UHy2PSS7_AGRwKqUDu
 -p 4
@@ -54,7 +54,7 @@ java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
 <br> 
 
 ```
-java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
+java -jar ./target/scopre-repository-1.0-jar-with-dependencies.jar
 -d
 -t glpat-x2UHy2PSS7_AGRwKqUDu
 -p 4

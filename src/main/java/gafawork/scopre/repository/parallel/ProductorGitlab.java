@@ -1,7 +1,7 @@
 package gafawork.scopre.repository.parallel;
 
 import gafawork.scopre.repository.exception.ProductorGitlabInstanceException;
-import gafawork.scopre.repository.main.Easyfind;
+import gafawork.scopre.repository.main.Scoprerepo;
 import gafawork.scopre.repository.util.Constantes;
 
 import gafawork.scopre.repository.util.SearchVO;
@@ -86,7 +86,7 @@ public class ProductorGitlab extends SearchGitlab implements Runnable {
                 Thread.sleep(1000);
             }
 
-            Easyfind.shutdown();
+            Scoprerepo.shutdown();
 
         } catch (GitLabApiException | InterruptedException | IOException e) {
             logger.error(e.getMessage());

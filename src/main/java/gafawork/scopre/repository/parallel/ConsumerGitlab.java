@@ -1,6 +1,6 @@
 package gafawork.scopre.repository.parallel;
 
-import gafawork.scopre.repository.main.Easyfind;
+import gafawork.scopre.repository.main.Scoprerepo;
 
 import gafawork.scopre.repository.util.Constantes;
 import gafawork.scopre.repository.util.SearchDetail;
@@ -63,7 +63,7 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
             searchDetail.addLine(outFile);
             searchDetail.addLine(outLine);
 
-            Easyfind.addPlugin(searchDetail.getNome(), searchDetail.getPath(), searchDetail.getBranch(), searchDetail.getUrl(), rule);
+            Scoprerepo.addPlugin(searchDetail.getNome(), searchDetail.getPath(), searchDetail.getBranch(), searchDetail.getUrl(), rule);
         }
 
         return result;

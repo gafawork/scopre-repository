@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Easyfind {
+public class Scoprerepo {
 
     private static Logger logger = LogManager.getLogger();
 
@@ -125,7 +125,7 @@ public class Easyfind {
             public void run() {
                 logger.info("shutdownHook in action");
                 try {
-                    Easyfind.shutdown();
+                    Scoprerepo.shutdown();
                 } catch (IOException e) {
                     logger.error(e.getMessage());
                 }
