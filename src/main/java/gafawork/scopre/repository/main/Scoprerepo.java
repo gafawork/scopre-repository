@@ -1,14 +1,14 @@
 /**
  *
  */
-package gafawork.easyfind.main;
+package gafawork.scopre.repository.main;
 
-import gafawork.easyfind.parallel.ConsumerGitlab;
-import gafawork.easyfind.parallel.ProductorGitlab;
+import gafawork.scopre.repository.parallel.ConsumerGitlab;
+import gafawork.scopre.repository.parallel.ProductorGitlab;
 
-import gafawork.easyfind.plugin.ExecutePlugin;
-import gafawork.easyfind.util.*;
+import gafawork.scopre.repository.plugin.ExecutePlugin;
 
+import gafawork.scopre.repository.util.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Easyfind {
+public class Scoprerepo {
 
     private static Logger logger = LogManager.getLogger();
 
@@ -36,7 +36,7 @@ public class Easyfind {
 
 
     public static void main(String[] args)  {
-        System.out.println("Inventio Repository for Gitlab by Gafawork");
+        System.out.println("Scopre Repository for Gitlab by Gafawork");
         System.out.println("-------------------------------");
         System.out.println("");
 
@@ -125,7 +125,7 @@ public class Easyfind {
             public void run() {
                 logger.info("shutdownHook in action");
                 try {
-                    Easyfind.shutdown();
+                    Scoprerepo.shutdown();
                 } catch (IOException e) {
                     logger.error(e.getMessage());
                 }

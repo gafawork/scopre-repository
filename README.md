@@ -1,4 +1,4 @@
-# Easyfind for Gitlab <br />Java Library for search in the GitLab repository
+# Scopre Repository for Gitlab <br />Java Library for search in the GitLab repository
 
 Java library for searching Gitlab Server repositories.
 
@@ -17,18 +17,20 @@ mvn clean install
 ```
 
 ---
-### Using Gitlab-Search
+### Using Scopre Repository
 
-| parameter                   | functionality                                                | sample                          |
-|-----------------------------|--------------------------------------------------------------|---------------------------------|
-| -d, --debug                 | debug                                                        | -d                              |
-| -t, --token                 | token [REQUIRED]                                             | -t glpat-x3Udy1PSS5_AgRwjUDu    |
-| -f, --filter <args>         | filter files                                                 | -f "pom.xml" "config.properties" |
-| -s, --search <args>         | one text or list of many text as input for search [REQUIRED] | -s "context" "Spring-boot"      |
-| -b, --searchBranches <args> | branch(es)                                                   | -b "master" "develop"           |
-| -h, hostUrl <arg>           | host gitlab  [REQUIRED]                                      | -h "https://gitlab.com"         |
-| -n, --projectName <args>    | project name                                                 | -n "gitlab-search" "gafawork"   |
-| -p, --parallel              | total threads                                                | -p 4                            |
+| parameter                   | functionality                                                | sample                                      |
+|-----------------------------|--------------------------------------------------------------|---------------------------------------------|
+| -d, --debug                 | debug                                                        | -d                                          |
+| -t, --token  <arg>          | token [REQUIRED]                                             | -t glpat-x3Udy1PSS5_AgRwjUDu                |
+| -f, --filter <args>         | filter files                                                 | -f "pom.xml" "config.properties"            |
+| -s, --search <args>         | one text or list of many text as input for search [REQUIRED] | -s "context" "Spring-boot"                  |
+| -b, --searchBranches <args> | branch(es)                                                   | -b "master" "develop"                       |
+| -h, hostUrl <arg>           | host gitlab  [REQUIRED]                                      | -h "https://gitlab.com"                     |
+| -n, --projectName <args>    | project name                                                 | -n "gitlab-search" "gafawork"               |
+| -p, --parallel <arg>        | total threads                                                | -p 4                                        |
+| -c, --classPlugin <arg>     | plugin for execute                                           | -c plugin.gafawork.scopre.repository.SystemOutPlugin |
+| -i, --inputFile <arg>       | input file filter projects                                   | -i inputFilterFile.csv                      |
 
 <br> 
 
@@ -39,7 +41,7 @@ mvn clean install
 To run Gitlab-Search, you must run it via the command line using the parameters below:
 
 ```
-java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
+java -jar ./target/scopre-repository-1.0-jar-with-dependencies.jar
 -d
 -t glpat-x2UHy2PSS7_AGRwKqUDu
 -p 4
@@ -52,7 +54,7 @@ java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
 <br> 
 
 ```
-java -jar ./target/easyfind-1.0-jar-with-dependencies.jar
+java -jar ./target/scopre-repository-1.0-jar-with-dependencies.jar
 -d
 -t glpat-x2UHy2PSS7_AGRwKqUDu
 -p 4

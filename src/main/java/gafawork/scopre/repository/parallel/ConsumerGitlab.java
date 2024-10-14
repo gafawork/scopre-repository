@@ -1,9 +1,11 @@
-package gafawork.easyfind.parallel;
+package gafawork.scopre.repository.parallel;
 
-import gafawork.easyfind.main.Easyfind;
-import gafawork.easyfind.util.*;
+import gafawork.scopre.repository.main.Scoprerepo;
 
-
+import gafawork.scopre.repository.util.Constantes;
+import gafawork.scopre.repository.util.SearchDetail;
+import gafawork.scopre.repository.util.SearchVO;
+import gafawork.scopre.repository.util.WriteFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gitlab4j.api.GitLabApiException;
@@ -40,7 +42,7 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
         callAbort();
     }
     public boolean search(SearchDetail searchDetail, String rule , String path, int posLine, String line) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        boolean retorno = false;
+        boolean result = false;
 
         Pattern pattern = getPattern(rule);
 
@@ -48,23 +50,23 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
 
         if (matcher.find()) {
 
-            retorno = true;
+            result = true;
 
-            searchDetail.encontrado();
+            searchDetail.found();
 
-            String outArquivo = "Path:" + path;
-            String outLinha = "Line:" + posLine + " - " + line;
+            String outFile = "Path:" + path;
+            String outLine = "Line:" + posLine + " - " + line;
 
-            String msgLog = String.format("Consumer Thread: %s  - find:  %s", Thread.currentThread().threadId(), outLinha);
+            String msgLog = String.format("Consumer Thread: %s  - find:  %s", Thread.currentThread().threadId(), outLine);
             logger.info(msgLog);
 
-            searchDetail.addLine(outArquivo);
-            searchDetail.addLine(outLinha);
+            searchDetail.addLine(outFile);
+            searchDetail.addLine(outLine);
 
-            Easyfind.addPlugin(searchDetail.getNome(), searchDetail.getPath(), searchDetail.getBranch(), searchDetail.getUrl(), rule);
+            Scoprerepo.addPlugin(searchDetail.getNome(), searchDetail.getPath(), searchDetail.getBranch(), searchDetail.getUrl(), rule);
         }
 
-        return retorno;
+        return result;
     }
 
     @Override
@@ -109,7 +111,7 @@ public class ConsumerGitlab extends AbortUtil implements Runnable {
         } catch (Exception e) {
             logger.error(e.getMessage());
 
-            String msgLog = String.format("Thread Interrupted:  %s - Project - [thread]: %s  - Branch: %s", Thread.currentThread().threadId(), searchVO.getProject().getName() ,  searchVO.getBranch().getName());
+            String msgLog = String.format("Thread Interrupted [thread]:  %s - Project - : %s  - Branch: %s", Thread.currentThread().threadId(), searchVO.getProject().getName() ,  searchVO.getBranch().getName());
             logger.info(msgLog);
         }
 

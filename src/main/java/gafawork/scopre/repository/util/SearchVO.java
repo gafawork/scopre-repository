@@ -1,4 +1,4 @@
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.models.Branch;

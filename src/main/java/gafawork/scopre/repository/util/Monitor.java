@@ -2,11 +2,11 @@
  *
  */
 
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
-import gafawork.easyfind.parallel.ConsumerGitlab;
-import gafawork.easyfind.parallel.ProductorGitlab;
-import gafawork.easyfind.plugin.ExecutePlugin;
+import gafawork.scopre.repository.parallel.ConsumerGitlab;
+import gafawork.scopre.repository.parallel.ProductorGitlab;
+import gafawork.scopre.repository.plugin.ExecutePlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,4 +1,4 @@
-package gafawork.easyfind.util;
+package gafawork.scopre.repository.util;
 
 
 import org.apache.logging.log4j.Level;
@@ -19,7 +19,7 @@ public class LogConfigManager {
         LoggerContext logContext = (LoggerContext) LogManager.getContext(false);
         Configuration configuration = logContext.getConfiguration();
         LoggerConfig loggerConfig = configuration.getLoggerConfig(loggerName);
-        // getLoggerConfig("a.b.c") could return logger for "a.b" if there is no logger for "a.b.c"
+
         if (loggerConfig.getName().equalsIgnoreCase(loggerName)) {
             loggerConfig.setLevel(newLevel);
             logger.info("Changed logger level for {} to {} ", loggerName, newLevel);
