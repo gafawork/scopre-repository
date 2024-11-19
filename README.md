@@ -5,7 +5,7 @@ Java library for searching Gitlab Server repositories.
 
 ---
 
-## GitLab Server Version Support
+## GitLab Server Version Support 
 
 gitlab4j-api which supports versions 11.0+ of Gitlab Community Edition and Gitlab Enterprise Edition
 
